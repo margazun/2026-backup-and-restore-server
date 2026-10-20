@@ -53,6 +53,31 @@ BOOTSTRAP_LOCK_FD=""
 #######################################
 
 
+_bootstrap_check_structure()
+{
+    local required_paths=(
+        "VERSION"
+        "lib"
+        "modules"
+        "configs"
+    )
+
+
+    local path
+
+    for path in "${required_paths[@]}"; do
+
+        if [[ ! -e "${PROJECT_ROOT}/${path}" ]]; then
+
+            _bootstrap_error \
+                "Invalid project structure. Missing: ${path}"
+
+            exit 1
+        fi
+
+    done
+}
+
 _bootstrap_error()
 {
     printf 'BOOTSTRAP ERROR: %s\n' "$*" >&2
@@ -199,32 +224,41 @@ _bootstrap_register_traps()
 
 _bootstrap_load_libraries()
 {
-    local lib_dir
-
-    lib_dir="${PROJECT_ROOT}/lib"
+    local library
 
 
-    local libraries=(
+    local required_libraries=(
         "logger.sh"
         "errors.sh"
         "utils.sh"
-        "manifest.sh"
-        "archive.sh"
-        "crypto.sh"
         "module.sh"
     )
 
 
-    local library
-
-    for library in "${libraries[@]}"; do
-
-        if [[ -f "${lib_dir}/${library}" ]]; then
-            # shellcheck disable=SC1090
-            source "${lib_dir}/${library}"
-        fi
-
+    for library in "${required_libraries[@]}"; do
+        _bootstrap_load_required_library "${library}"
     done
+}
+
+
+_bootstrap_load_required_library()
+{
+    local library="$1"
+
+    local path="${PROJECT_ROOT}/lib/${library}"
+
+
+    if [[ ! -f "${path}" ]]; then
+
+        _bootstrap_error \
+            "Required library missing: ${library}"
+
+        exit 1
+    fi
+
+
+    # shellcheck disable=SC1090
+    source "${path}"
 }
 
 
@@ -265,6 +299,8 @@ bootstrap()
     _bootstrap_check_bash
 
     _bootstrap_find_project_root
+
+    _bootstrap_check_structure
 
     _bootstrap_load_version
 

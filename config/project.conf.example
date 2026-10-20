@@ -1,0 +1,47 @@
+#
+# 2026-backup-and-restore-server
+#
+# Main project configuration example.
+#
+# Copy this file to:
+#
+# configs/project.conf
+#
+# before production use.
+#
+
+
+#######################################
+# Project
+#######################################
+
+PROJECT_NAME="2026-backup-and-restore-server"
+
+
+#######################################
+# Runtime
+#######################################
+
+# Uncomment to override defaults
+
+# PROJECT_RUNTIME="/var/lib/server-deploy/runtime"
+
+# PROJECT_BACKUP_DIR="/var/backups/server-deploy"
+
+
+#######################################
+# Logging
+#######################################
+
+PROJECT_LOG_LEVEL="INFO"
+
+PROJECT_COLOR="true"
+
+
+#######################################
+# Backup
+#######################################
+
+BACKUP_COMPRESSION="zstd"
+
+BACKUP_ENCRYPTION="age"
